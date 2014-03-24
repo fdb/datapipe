@@ -17,3 +17,8 @@
     (let [rows [{:x 1 :y 10} {:x 2 :y 20} {:x 3 :y 30}]]
       (is (= (lookup :x rows) [{:x 1} {:x 2} {:x 3}]))
       (is (= (lookup :y rows) [{:y 10} {:y 20} {:y 30}])))))
+
+(deftest test-freq
+  (testing "Frequencies"
+    (let [rows [{:key "a"} {:key "b"} {:key "c"} {:key "a"} {:key "a"} {:key "b"}]]
+      (is (= (freqs :key rows) {"a" 3 "b" 2 "c" 1})))))
