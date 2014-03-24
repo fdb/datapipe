@@ -2,6 +2,10 @@ DataPipe
 ========
 Looks like crap, works like magic.
 
+## To build
+
+    lein uberjar
+
 ## License
 
 Copyright © 2014 Frederik De Bleser
