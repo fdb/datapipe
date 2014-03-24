@@ -11,8 +11,10 @@
 ; Lookup is harder since we join-csv-row takes the same headers in.
 ; We could change this if join-csv-row looked at the first row for the
 ; header, but this would require holding on to the head?
-;(defn lookup [key coll]
-;  (map #({key (get % key)}) coll))
+(defn lookup
+  "Keep only the given column."
+  [key coll]
+  (map (fn [row] {key (get row key)}) coll))
 
 ; Keep only the ones where x = given x value.
 ; You could expand this where the value should fit a certain bounding box.
@@ -33,10 +35,11 @@
 (defn split-csv-rows [headers coll]
   (map #(zipmap headers (s/split % #",")) coll))
 
-(defn join-csv-rows [headers rows]
-  (map (fn [row]
-         (let [vals (map row headers)]
-           (s/join "," vals))) rows))
+(defn join-csv-rows [rows]
+  (let [headers (vec (keys (first rows)))]
+    (map (fn [row]
+           (let [vals (map row headers)]
+             (s/join "," vals))) rows)))
 
 
 (defn pipe
@@ -45,7 +48,7 @@
   (with-open [r (io/reader in-file)
               w (io/writer out-file)]
     (let [headers (s/split (first (line-seq r)) #",")]
-      (doseq [line (join-csv-rows headers (op (split-csv-rows headers (line-seq r))))]
+      (doseq [line (join-csv-rows (op (split-csv-rows headers (line-seq r))))]
         (.write w (str line "\n"))))))
 
 
@@ -57,7 +60,7 @@
       (reduce f val  (split-csv-rows headers (line-seq r))))))
 
 
-;(pipe (comp (partial x-pos "300") (partial random-sample 0.1)) "mouse.csv" "new.csv")
+(pipe (comp (partial sample 0.01) (partial lookup "x")) "/Users/fdb/Desktop/mouse.csv" "/Users/fdb/Desktop/m.csv")
 
 ;(comment
 ;(pipe
