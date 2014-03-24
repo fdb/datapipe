@@ -18,7 +18,13 @@
       (is (= (lookup :x rows) [{:x 1} {:x 2} {:x 3}]))
       (is (= (lookup :y rows) [{:y 10} {:y 20} {:y 30}])))))
 
-(deftest test-freq
-  (testing "Frequencies"
+(deftest test-freq-map
+  (testing "Frequency map"
     (let [rows [{:key "a"} {:key "b"} {:key "c"} {:key "a"} {:key "a"} {:key "b"}]]
-      (is (= (freqs :key rows) {"a" 3 "b" 2 "c" 1})))))
+      (is (= (sort-by :key (freqs :key rows)) [{:key "a" :amount 3} {:key "b" :amount 2} {:key "c" :amount 1}])))))
+
+(deftest test-freqs
+  (testing "Frequencies"
+    (let [positions [{:x 1 :y 1} {:x 1 :y 2} {:x 2 :y 1}]]
+      (is (= (sort-by :x (freqs :x positions)) [{:x 1 :amount 2} {:x 2 :amount 1}]))
+      (is (= (sort-by #(vec (map % [:x :y])) (freqs :x :y positions)) [{:x 1 :y 1 :amount 1} {:x 1 :y 2 :amount 1} {:x 2 :y 1 :amount 1}])))))

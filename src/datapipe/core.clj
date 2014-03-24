@@ -38,16 +38,32 @@
                (re-matches #"\w" (get row "key")))))
           coll))
 
-(defn freqs
-  "Count the occurences of a value for the given key and return a list with one map with key=count."
-  [key coll]
-  ; Wrap this in a list of one element so we can use it for join-csv-rows.
-  [(reduce
+(defn freq-map
+  "Count the occurences of a value for the given key and return a map with key=count."
+  ([key coll]
+  (reduce
      (fn [cnts row]
          (let [v (get row key)]
            (assoc cnts v (inc (get cnts v 0)))))
    {}
-   coll)])
+   coll))
+  ([k1 k2 coll]
+    (reduce
+     (fn [cnts row]
+         (let [kv1 (get row k1) kv2 (get row k2)]
+           (assoc cnts [kv1 kv2] (inc (get cnts [kv1 kv2] 0)))))
+   {}
+   coll)))
+
+(defn freqs
+  "Count the occurences of a value for the given key and return a list with key,count."
+  ([key coll]
+  (let [fm (freq-map key coll)]
+    (map (fn [[kv amt]] {key kv :amount amt}) fm)))
+  ([k1 k2 coll]
+   (let [fm (freq-map k1 k2 coll)]
+     (map (fn [[[kv1 kv2] amt]] {k1 kv1 k2 kv2 :amount amt}) fm))))
+
 
 (defn parse-float
   ([s] (parse-float s 0.0))
@@ -76,6 +92,12 @@
 
 ; File filter operation
 
+
+(defn csv-header
+  "Convert a list of strings/keywords to a CSV header."
+  [headers]
+  (s/join "," (map name headers)))
+
 (defn split-csv-rows [headers coll]
   (map #(zipmap headers (s/split % #",")) coll))
 
@@ -83,7 +105,7 @@
   (let [headers (vec (keys (first rows)))]
     (conj (map (fn [row]
                  (let [vals (map row headers)]
-                   (s/join "," vals))) rows) (s/join "," headers))))
+                   (s/join "," vals))) rows) (csv-header headers))))
 
 (defn pipe
   "Filter the input file using the op filter and write to an output file."
@@ -114,7 +136,6 @@
 
 
 ;(freqs :key [{:key "a"} {:key "b"} {:key "c"} {:key "a"} {:key "a"} {:key "b"}])
-
 
 ;(pipe (rcomp
 ;       (partial sample 0.01)
