@@ -39,7 +39,7 @@
           coll))
 
 (defn freqs
-  "Count the occurences of a value for the given key."
+  "Count the occurences of a value for the given key and return a list with one map with key=count."
   [key coll]
   ; Wrap this in a list of one element so we can use it for join-csv-rows.
   [(reduce
@@ -48,6 +48,30 @@
            (assoc cnts v (inc (get cnts v 0)))))
    {}
    coll)])
+
+(defn parse-float
+  ([s] (parse-float s 0.0))
+  ([s default]
+   (if (number? s)
+     s
+     (try
+       (Float/valueOf s)
+       (catch Exception e default)))))
+
+(defn scale
+  "Reduce the size of the input keys. This assumes the keys are numbers."
+  [key scale coll]
+  (map (fn [row]
+         (let [v (parse-float (get row key ""))
+               new-v (Math/round (* v (float scale)))]
+           (assoc row key (str new-v)))) coll))
+
+
+
+
+;(defn freqs
+;  "Count the occurences and return a list with {"key=count] "
+;  )
 
 
 ; File filter operation
@@ -86,7 +110,21 @@
 ;(pipe (comp (partial sample 0.01) (partial lookup "x")) "/Users/fdb/Desktop/mouse.csv" "/Users/fdb/Desktop/m.csv")
 
 
-(pipe (rcomp only-letters (partial freqs "key")) "/Users/fdb/Desktop/keys.csv" "/Users/fdb/Desktop/k.csv")
+;(pipe (rcomp only-letters (partial freqs "key")) "/Users/fdb/Desktop/keys.csv" "/Users/fdb/Desktop/k.csv")
+
+
+;(freqs :key [{:key "a"} {:key "b"} {:key "c"} {:key "a"} {:key "a"} {:key "b"}])
+
+
+;(pipe (rcomp
+;       (partial sample 0.01)
+;       (partial scale "x" 0.1)
+;       (partial scale "y" 0.1)
+;       (partial freqs "x")
+;       )
+;      "/Users/fdb/Desktop/mouse.csv" "/Users/fdb/Desktop/m.csv")
+
+
 ;(comment
 ;(pipe
 ; (comp
