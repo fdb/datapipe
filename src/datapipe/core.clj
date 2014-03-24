@@ -24,7 +24,7 @@
   [op in-file out-file]
   (with-open [r (io/reader in-file)
               w (io/writer out-file)]
-    (let [headers (s/split (first (line-seq r)) #",")]
+    (let [headers (map keyword (s/split (first (line-seq r)) #","))]
       (doseq [line (join-csv-rows (op (split-csv-rows headers (line-seq r))))]
         (.write w (str line "\n"))))))
 
