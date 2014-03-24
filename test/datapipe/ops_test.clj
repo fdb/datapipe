@@ -28,3 +28,8 @@
     (let [positions [{:x 1 :y 1} {:x 1 :y 2} {:x 2 :y 1}]]
       (is (= (sort-by :x (freqs :x positions)) [{:x 1 :amount 2} {:x 2 :amount 1}]))
       (is (= (sort-by #(vec (map % [:x :y])) (freqs :x :y positions)) [{:x 1 :y 1 :amount 1} {:x 1 :y 2 :amount 1} {:x 2 :y 1 :amount 1}])))))
+
+(deftest test-distance
+  (testing "Distance"
+    (let [positions [{:x 0 :y 0} {:x 20 :y 0} {:x 20 :y 30}]]
+      (is (= (distance positions) [50]))))))

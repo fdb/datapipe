@@ -83,3 +83,28 @@
                new-v (Math/round (* v (float scale)))]
            (assoc row key (str new-v)))) coll))
 
+(defn- geo-distance
+  "Calculate the Euclidian distance between two points."
+  [x1 y1 x2 y2]
+  (Math/sqrt
+   (+
+    (Math/pow (- x2 x1) 2)
+    (Math/pow (- y2 y1) 2))))
+
+(defn distance
+  "Calculate the total euclidian distance between x/y coordinates.
+  This assumes the file has columns x and y which contain numbers."
+  [coll]
+  [(reduce (fn [pt1 pt2]
+          (let [x1 (parse-float (pt1 :x))
+                y1 (parse-float (pt1 :y))
+                x2 (parse-float (pt2 :x))
+                y2 (parse-float (pt2 :y))
+                dist (get pt1 :distance 0)]
+            {:x x2 :y y2 :distance (+ dist (geo-distance x1 y1 x2 y2))})) coll)])
+
+
+;(def pts [{:x 0 :y 0} {:x 10 :y 10} {:x 20 :y 20}])
+;(distance pts)
+
+
