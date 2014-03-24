@@ -111,7 +111,6 @@
 (def ref-panel (text :text (gen-ref) :multi-line? true :editable? false))
 (def ref-scroll (scrollable ref-panel))
 
-
 ; Run button
 (defn do-run [_]
   (let [source (value (select f [:#source]))]
@@ -128,8 +127,10 @@
          (border-panel
           :border (border/empty-border :thickness 10)
           :north (vertical-panel :items [input-file-panel output-file-panel])
-          :east ref-scroll
-          :center (top-bottom-split source-scroll error-scroll :divider-location 0.7)
+          :center (left-right-split
+                   (top-bottom-split source-scroll error-scroll :divider-location 0.7 :border nil)
+                   ref-scroll
+                   :divider-location 0.5 :border nil)
           :south run-button))
 
 
