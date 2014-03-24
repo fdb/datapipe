@@ -103,7 +103,7 @@
 
 (defn gen-ref []
   (s/join "\n\n"
-  (for [[name v] (ns-publics 'datapipe.ops)]
+  (for [[name v] (sort (ns-publics 'datapipe.ops))]
     (str name "\n"
          (first (:arglists (meta v))) "\n"
          (-> v meta :doc)))))
