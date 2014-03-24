@@ -76,7 +76,7 @@
 
 (defn prepare-source [source]
   (let [wrapped-source (wrap-source-with "  (partial " ")" source)]
-    (str "(use 'datapipe.core)\n(datapipe.core/pipe (datapipe.core/rcomp \n"
+    (str "(use 'datapipe.ops)\n(datapipe.core/pipe (datapipe.core/rcomp \n"
          wrapped-source
          "\n) \"" @input-file "\" \"" @output-file "\")")))
 
