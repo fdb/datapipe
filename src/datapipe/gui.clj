@@ -1,9 +1,9 @@
 (ns datapipe.gui
   (:require [seesaw.forms :as forms]
             [seesaw.border :as border]
-            [clojure.string :as s])
-  (:use datapipe.core
-       seesaw.core
+            [clojure.string :as s]
+            [datapipe.core :as pipe])
+  (:use seesaw.core
        seesaw.chooser)
   (:gen-class))
 
@@ -47,17 +47,42 @@
 
 ; Source pane
 (def initial-source
-   "(partial datapipe.core/sample 0.001)")
+   "sample 0.001")
 
 
 (def source-pane (text :id :source :text initial-source :multi-line? true :font "MONOSPACED-PLAIN-14"))
 
 (def source-scroll (scrollable source-pane))
 
-(defn eval-source [source]
-  (let [full-source (str "(datapipe.core/pipe (datapipe.core/rcomp " source ") \"" @input-file "\" \"" @output-file "\")")]
-    (load-string full-source)))
 
+(defn useless?
+  "Return if this line of source is useless. That is, it is empty or is a comment."
+  [s]
+  (let [ts (.trim s)]
+    (or (empty? ts)
+        (.startsWith ts ";")
+        (.startsWith ts "//")
+        (.startsWith ts "#"))))
+
+(defn wrap-source-with
+  "Wrap each line of source with the prefix and suffix.
+  Skips useless lines."
+  [prefix suffix source]
+  (let [lines (s/split source #"\n")
+        source-lines (filter (complement useless?) lines)
+        wrapped-lines (map #(str prefix % suffix) source-lines)]
+    (s/join "\n" wrapped-lines)))
+
+
+(defn prepare-source [source]
+  (let [wrapped-source (wrap-source-with "  (partial " ")" source)]
+    (str "(use 'datapipe.core)\n(datapipe.core/pipe (datapipe.core/rcomp \n"
+         wrapped-source
+         "\n) \"" @input-file "\" \"" @output-file "\")")))
+
+
+(defn eval-source [source]
+  (load-string (prepare-source source)))
 
 ; Error pane
 (def error-pane (text :id :err :text "" :multi-line? true :font "MONOSPACED-PLAIN-11" :editable? false))
@@ -93,7 +118,6 @@
           :north (vertical-panel :items [input-file-panel output-file-panel])
           :center (top-bottom-split source-scroll error-scroll :divider-location 0.7)
           :south run-button))
-
 
 
 ;(config! f :size  [800 :by 600])
