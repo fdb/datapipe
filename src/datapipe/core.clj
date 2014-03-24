@@ -49,13 +49,15 @@
 
 ;(freqs :key [{:key "a"} {:key "b"} {:key "c"} {:key "a"} {:key "a"} {:key "b"}])
 
-;(pipe (rcomp
-;       (partial sample 0.01)
-;       (partial scale "x" 0.1)
-;       (partial scale "y" 0.1)
-;       (partial freqs "x")
-;       )
-;      "/Users/fdb/Desktop/mouse.csv" "/Users/fdb/Desktop/m.csv")
+(comment
+(pipe (rcomp
+       (partial datapipe.ops/sample 0.01)
+       (partial datapipe.ops/scale :x 0.1)
+       (partial datapipe.ops/scale :y 0.1)
+       (partial datapipe.ops/freqs :x :y)
+       )
+      "/Users/fdb/Desktop/mouse.csv" "/Users/fdb/Desktop/m.csv")
+)
 
 
 ;(comment
