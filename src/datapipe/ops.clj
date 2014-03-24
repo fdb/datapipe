@@ -57,7 +57,7 @@
    {}
    coll)))
 
-(defn- freqs
+(defn freqs
   "Count the number of time a value in the given column occurs.
   You can also specify two columns; in this case both values have to match.
   Example: freqs :x :y"
