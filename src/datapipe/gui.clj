@@ -2,11 +2,10 @@
   (:require [seesaw.forms :as forms]
             [seesaw.border :as border]
             [clojure.string :as s]
-            [datapipe.core :as pipe])
+            [datapipe.core :as pipe]
+            [datapipe.ops :as ops])
   (:use seesaw.core
-       seesaw.chooser)
-  (:gen-class))
-
+        seesaw.chooser))
 
 (native!)
 (defonce f (frame :title "DataPipe"))
@@ -100,6 +99,19 @@
 (defn set-error [e]
   (config! error-pane :text (error-message e)))
 
+; Ref panel
+
+(defn gen-ref []
+  (s/join "\n\n"
+  (for [[name v] (ns-publics 'datapipe.ops)]
+    (str name "\n"
+         (first (:arglists (meta v))) "\n"
+         (-> v meta :doc)))))
+
+(def ref-panel (text :text (gen-ref) :multi-line? true :editable? false))
+(def ref-scroll (scrollable ref-panel))
+
+
 ; Run button
 (defn do-run [_]
   (let [source (value (select f [:#source]))]
@@ -116,6 +128,7 @@
          (border-panel
           :border (border/empty-border :thickness 10)
           :north (vertical-panel :items [input-file-panel output-file-panel])
+          :east ref-scroll
           :center (top-bottom-split source-scroll error-scroll :divider-location 0.7)
           :south run-button))
 
