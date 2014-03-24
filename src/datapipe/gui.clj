@@ -55,7 +55,7 @@
 (def source-scroll (scrollable source-pane))
 
 (defn eval-source [source]
-  (let [full-source (str "(datapipe.core/pipe (comp " source ") \"" @input-file "\" \"" @output-file "\")")]
+  (let [full-source (str "(datapipe.core/pipe (datapipe.core/rcomp " source ") \"" @input-file "\" \"" @output-file "\")")]
     (load-string full-source)))
 
 
@@ -66,14 +66,13 @@
 
 (defn error-message [e]
   (if (nil? e)
-    ""
+    "OK"
   (str
    (.getMessage e)
    "\n\n"
    (s/join "\n" (map str (.getStackTrace e))))))
 
 (defn set-error [e]
-  (println e)
   (config! error-pane :text (error-message e)))
 
 ; Run button
