@@ -122,3 +122,84 @@
   [key col-name f coll]
   (map #(assoc % col-name (f (get % key))) coll))
 
+;; Time
+
+(def ^{:private true} df (java.text.SimpleDateFormat. "yyyy-MM-dd HH:mm:ss.SSS"))
+
+(defn- to-calendar [s]
+  (doto (java.util.Calendar/getInstance)
+    (.setTime (.parse df s))))
+
+(defn time-year
+  "Get the year of the given date.
+  This is useful when combined with add-column.
+  Example: add-column :time :year time-year"
+  [date]
+  (let [cal (to-calendar date)]
+    (.get cal java.util.Calendar/YEAR)))
+
+(defn time-month
+  "Get the month of the given date.
+  This is useful when combined with add-column.
+  Example: add-column :time :month time-month"
+  [date]
+  (let [cal (to-calendar date)]
+    ; .getMonth starts from 0, which is stupid.
+    (inc (.get cal java.util.Calendar/MONTH))))
+
+(defn time-date
+  "Get the day of the month of the given date.
+  This is useful when combined with add-column.
+  Example: add-column :time :date time-date"
+  [date]
+  (let [cal (to-calendar date)]
+      (.get cal java.util.Calendar/DATE)))
+
+(defn time-dow
+  "Get the day of the week for the given date.
+  This is useful when combined with add-column.
+  Example: add-column :time :dow time-dow"
+  [date]
+  (let [cal (to-calendar date)]
+    (.get cal java.util.Calendar/DAY_OF_WEEK)))
+
+(defn time-doy
+  "Get the day of the year for the given date.
+  This is useful when combined with add-column.
+  Example: add-column :time :doy time-doy"
+  [date]
+  (let [cal (to-calendar date)]
+    (.get cal java.util.Calendar/DAY_OF_YEAR)))
+
+(defn time-hour
+  "Get the hour for the given date.
+  This uses the 24-hour clock.
+  This is useful when combined with add-column.
+  Example: add-column :time :hour time-hour"
+  [date]
+  (let [cal (to-calendar date)]
+    (.get cal java.util.Calendar/HOUR_OF_DAY)))
+
+(defn time-minute
+  "Get the minute for the given date.
+  This is useful when combined with add-column.
+  Example: add-column :time :minute time-minute"
+  [date]
+  (let [cal (to-calendar date)]
+    (.get cal java.util.Calendar/MINUTE)))
+
+(defn time-second
+  "Get the second for the given date.
+  This is useful when combined with add-column.
+  Example: add-column :time :second time-second"
+  [date]
+  (let [cal (to-calendar date)]
+    (.get cal java.util.Calendar/SECOND)))
+
+(defn time-week
+  "Get the week number for the given date.
+  This is useful when combined with add-column.
+  Example: add-column :time :week time-week"
+  [date]
+  (let [cal (to-calendar date)]
+    (.get cal java.util.Calendar/WEEK_OF_YEAR)))
