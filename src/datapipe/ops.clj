@@ -113,3 +113,12 @@
                 dist (get pt1 :distance 0)]
             {:x x2 :y y2
              :distance (+ dist (geo-distance x1 y1 x2 y2))})) coll)])
+
+(defn add-column
+  "Add a new column with the name col-name.
+  For each row, call the function on the values for the key.
+  Example: add-column :time :week time-week
+  Example: add-column :x :plus-one inc"
+  [key col-name f coll]
+  (map #(assoc % col-name (f (get % key))) coll))
+

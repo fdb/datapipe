@@ -33,3 +33,8 @@
   (testing "Distance"
     (let [positions [{:x 0 :y 0} {:x 20 :y 0} {:x 20 :y 30}]]
       (is (= (distance positions) [{:x 20 :y 30 :distance 50.0}])))))
+
+(deftest test-add-column
+  (testing "Add a column"
+    (let [coll [{:x 20} {:x 50}]]
+      (is (= (add-column :x :x1 inc coll) [{:x 20 :x1 21} {:x 50 :x1 51}])))))
