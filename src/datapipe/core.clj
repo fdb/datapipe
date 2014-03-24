@@ -8,6 +8,24 @@
   [percentage coll]
   (filter (fn [x] (< (Math/random) percentage)) coll))
 
+
+(defn select
+  "Select a set of keys"
+  [key selector coll]
+  (let [pred
+        (cond (string? selector) #(= (% key))
+              (sequential? selector) #(some (set [(% key)]) selector)
+              (instance? java.util.regex.Pattern selector) #(re-matches selector (str (% key)))
+              )]
+    (filter pred coll)))
+
+;(select :x #"\w" [{:x 1} {:x "a"}])
+
+;(instance? java.util.regex.Pattern (re-pattern "a"))
+
+
+;(some #{1} ["a" "b"])
+
 ; Lookup is harder since we join-csv-row takes the same headers in.
 ; We could change this if join-csv-row looked at the first row for the
 ; header, but this would require holding on to the head?
@@ -81,13 +99,6 @@
          (let [v (parse-float (get row key ""))
                new-v (Math/round (* v (float scale)))]
            (assoc row key (str new-v)))) coll))
-
-
-
-
-;(defn freqs
-;  "Count the occurences and return a list with {"key=count] "
-;  )
 
 
 ; File filter operation
