@@ -1,6 +1,6 @@
-(ns datapipe.core-test
+(ns datapipe.ops-test
   (:require [clojure.test :refer :all]
-            [datapipe.core :refer :all]))
+            [datapipe.ops :refer :all]))
 
 (deftest test-sample
   (testing "The sample method"
