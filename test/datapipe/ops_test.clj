@@ -32,4 +32,4 @@
 (deftest test-distance
   (testing "Distance"
     (let [positions [{:x 0 :y 0} {:x 20 :y 0} {:x 20 :y 30}]]
-      (is (= (distance positions) [50]))))))
+      (is (= (distance positions) [{:x 20 :y 30 :distance 50.0}])))))
