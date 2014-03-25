@@ -92,7 +92,7 @@
         (string? e) e
         (instance? Throwable e)
         (str
-         (.getMessage e)
+         (.toString e)
          "\n\n"
          (s/join "\n" (map str (.getStackTrace e))))
         :else (str e)))
