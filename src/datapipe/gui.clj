@@ -151,7 +151,8 @@
                                  :divider-location 0.5 :border nil)
                         :south run-button)
                        data-table-scroll :divider-location 0.9 :border nil)
-           :size [1000 :by 700])
+           :size [1000 :by 700]
+           :on-close :exit)
   (show! f))
 
 ; (-main)
