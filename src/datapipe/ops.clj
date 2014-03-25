@@ -124,6 +124,15 @@
   [key col-name f coll]
   (pmap #(assoc % col-name (f (get % key))) coll))
 
+
+(defn words
+  "Try to find words.
+  Example: words :key"
+  [key coll]
+  (let [groups (partition-by (fn [row] (not (nil? (re-matches #"\w" (get row key ""))))) coll)]
+    (for [g groups]
+      (assoc (first g) :word  (apply str (map #(get % key) g))))))
+
 ;; Time
 
 (def ^{:private true} df (java.text.SimpleDateFormat. "yyyy-MM-dd HH:mm:ss.SSS"))

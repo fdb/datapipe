@@ -38,3 +38,9 @@
   (testing "Add a column"
     (let [coll [{:x 20} {:x 50}]]
       (is (= (add-column :x :x1 inc coll) [{:x 20 :x1 21} {:x 50 :x1 51}])))))
+
+(deftest test-words
+  (testing "Words"
+    (let [keys [{:k "a"} {:k "b"} {:k "."} {:k " "} {:k "c"}]]
+      (is (= (words :k keys) [{:word "ab" :k "a"} {:word ". " :k "."} {:word "c" :k "c"}])))))
+
