@@ -2,6 +2,8 @@
   (require [clojure.java.io :as io]
            [clojure.string :as s]))
 
+(set! *warn-on-reflection* true)
+
 (defn sample
   "Reduce the size of the file by randomly selecting lines from the file.
   The percentage is a value between 0 and 1. At 0, no rows are kept.
@@ -74,8 +76,8 @@
   If the string is not a number, return 0, or a default value
   of your choosing.
   If the value is already a number, it is returned as-is."
-  ([s] (parse-float s 0.0))
-  ([s default]
+  ([^String s] (parse-float s 0.0))
+  ([^String s default]
    (if (number? s)
      s
      (try
@@ -120,15 +122,18 @@
   Example: add-column :time :week time-week
   Example: add-column :x :plus-one inc"
   [key col-name f coll]
-  (map #(assoc % col-name (f (get % key))) coll))
+  (pmap #(assoc % col-name (f (get % key))) coll))
 
 ;; Time
 
 (def ^{:private true} df (java.text.SimpleDateFormat. "yyyy-MM-dd HH:mm:ss.SSS"))
 
-(defn- to-calendar [s]
-  (doto (java.util.Calendar/getInstance)
-    (.setTime (.parse df s))))
+(defn- to-calendar ^java.util.Calendar [s]
+  (let [^java.text.SimpleDateFormat format df]
+    (try
+      (doto (java.util.Calendar/getInstance)
+        (.setTime (.parse format s)))
+      (catch Exception e nil))))
 
 (defn time-year
   "Get the year of the given date.
@@ -136,7 +141,9 @@
   Example: add-column :time :year time-year"
   [date]
   (let [cal (to-calendar date)]
-    (.get cal java.util.Calendar/YEAR)))
+    (if-not (nil? cal)
+      (.get cal java.util.Calendar/YEAR)
+      0)))
 
 (defn time-month
   "Get the month of the given date.
@@ -144,8 +151,10 @@
   Example: add-column :time :month time-month"
   [date]
   (let [cal (to-calendar date)]
-    ; .getMonth starts from 0, which is stupid.
-    (inc (.get cal java.util.Calendar/MONTH))))
+    (if-not (nil? cal)
+      ; .getMonth starts from 0, which is stupid.
+      (inc (.get cal java.util.Calendar/MONTH))
+      0)))
 
 (defn time-date
   "Get the day of the month of the given date.
@@ -153,7 +162,9 @@
   Example: add-column :time :date time-date"
   [date]
   (let [cal (to-calendar date)]
-      (.get cal java.util.Calendar/DATE)))
+    (if-not (nil? cal)
+      (.get cal java.util.Calendar/DATE)
+      0)))
 
 (defn time-dow
   "Get the day of the week for the given date.
@@ -161,7 +172,9 @@
   Example: add-column :time :dow time-dow"
   [date]
   (let [cal (to-calendar date)]
-    (.get cal java.util.Calendar/DAY_OF_WEEK)))
+    (if-not (nil? cal)
+      (.get cal java.util.Calendar/DAY_OF_WEEK)
+      0)))
 
 (defn time-doy
   "Get the day of the year for the given date.
@@ -169,7 +182,9 @@
   Example: add-column :time :doy time-doy"
   [date]
   (let [cal (to-calendar date)]
-    (.get cal java.util.Calendar/DAY_OF_YEAR)))
+    (if-not (nil? cal)
+      (.get cal java.util.Calendar/DAY_OF_YEAR)
+      0)))
 
 (defn time-hour
   "Get the hour for the given date.
@@ -178,7 +193,9 @@
   Example: add-column :time :hour time-hour"
   [date]
   (let [cal (to-calendar date)]
-    (.get cal java.util.Calendar/HOUR_OF_DAY)))
+    (if-not (nil? cal)
+      (.get cal java.util.Calendar/HOUR_OF_DAY)
+      0)))
 
 (defn time-minute
   "Get the minute for the given date.
@@ -186,7 +203,9 @@
   Example: add-column :time :minute time-minute"
   [date]
   (let [cal (to-calendar date)]
-    (.get cal java.util.Calendar/MINUTE)))
+    (if-not (nil? cal)
+      (.get cal java.util.Calendar/MINUTE)
+      0)))
 
 (defn time-second
   "Get the second for the given date.
@@ -194,7 +213,9 @@
   Example: add-column :time :second time-second"
   [date]
   (let [cal (to-calendar date)]
-    (.get cal java.util.Calendar/SECOND)))
+    (if-not (nil? cal)
+      (.get cal java.util.Calendar/SECOND)
+      0)))
 
 (defn time-week
   "Get the week number for the given date.
@@ -202,4 +223,8 @@
   Example: add-column :time :week time-week"
   [date]
   (let [cal (to-calendar date)]
-    (.get cal java.util.Calendar/WEEK_OF_YEAR)))
+    (if-not (nil? cal)
+      (.get cal java.util.Calendar/WEEK_OF_YEAR)
+      0)))
+
+
