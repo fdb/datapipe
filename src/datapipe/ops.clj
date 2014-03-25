@@ -19,7 +19,7 @@
   [key selector coll]
   (let [pred
         (cond (string? selector)
-              #(= (% key))
+              #(= (str (% key)) selector)
               (sequential? selector)
               #(some (set [(% key)]) selector)
               (instance? java.util.regex.Pattern selector)
