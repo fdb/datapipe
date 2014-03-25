@@ -88,12 +88,14 @@
 
 
 (defn error-message [e]
-  (if (nil? e)
-    "OK"
-  (str
-   (.getMessage e)
-   "\n\n"
-   (s/join "\n" (map str (.getStackTrace e))))))
+  (cond (nil? e) "nil"
+        (string? e) e
+        (instance? Throwable e)
+        (str
+         (.getMessage e)
+         "\n\n"
+         (s/join "\n" (map str (.getStackTrace e))))
+        :else (str e)))
 
 (defn set-error [e]
   (config! error-pane :text (error-message e)))
@@ -121,20 +123,22 @@
 
 ; Run button
 (defn do-run [_]
-  (let [source (value source-pane)]
+  (let [source (value source-pane)
+        start-time (System/currentTimeMillis)]
     (try
       (do
         (eval-source source)
-        (set-error nil)
+        (set-error (format "Done in %.2f seconds." (float (/ (- (System/currentTimeMillis) start-time) 1000))))
         (data-table-set-file @output-file))
       (catch Exception e (set-error e)))))
 
 (def run-button (button :text "Run"))
 (listen run-button :action do-run)
 
+(defonce f (frame :title "DataPipe"))
+
 (defn -main []
-  (-> (frame :title "DataPipe"
-             :content (top-bottom-split
+  (config! f :content (top-bottom-split
                        (border-panel
                         :border (border/empty-border :thickness 10)
                         :north (vertical-panel :items [input-file-panel output-file-panel])
@@ -147,9 +151,7 @@
                                  :divider-location 0.5 :border nil)
                         :south run-button)
                        data-table-scroll :divider-location 0.9 :border nil)
-             :size [1000 :by 700]
-             :on-close :exit
-             )
-      show!))
+           :size [1000 :by 700])
+  (show! f))
 
 ; (-main)
