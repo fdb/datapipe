@@ -8,7 +8,6 @@
         seesaw.chooser))
 
 (native!)
-(defonce f (frame :title "DataPipe"))
 
 ; Input file
 (def input-file-label (label "<EMPTY>"))
@@ -111,34 +110,46 @@
 (def ref-panel (text :text (gen-ref) :multi-line? true :editable? false))
 (def ref-scroll (scrollable ref-panel))
 
+; Table
+(def data-table (table))
+(def data-table-scroll (scrollable data-table))
+
+
+(defn data-table-set-file [f]
+  (let [[headers rows] (pipe/preview-file f)]
+    (config! data-table :model [:columns headers :rows rows])))
+
 ; Run button
 (defn do-run [_]
-  (let [source (value (select f [:#source]))]
+  (let [source (value source-pane)]
     (try
-      (do (eval-source source)
-        (set-error nil))
+      (do
+        (eval-source source)
+        (set-error nil)
+        (data-table-set-file @output-file))
       (catch Exception e (set-error e)))))
 
 (def run-button (button :text "Run"))
 (listen run-button :action do-run)
 
-
-(config! f :content
-         (border-panel
-          :border (border/empty-border :thickness 10)
-          :north (vertical-panel :items [input-file-panel output-file-panel])
-          :center (left-right-split
-                   (top-bottom-split source-scroll error-scroll :divider-location 0.7 :border nil)
-                   ref-scroll
-                   :divider-location 0.5 :border nil)
-          :south run-button))
-
-
-;(config! f :size  [800 :by 600])
-;(-> f show!)
-
 (defn -main []
-  (config! f :size  [800 :by 600])
-  (-> f show!))
+  (-> (frame :title "DataPipe"
+             :content (top-bottom-split
+                       (border-panel
+                        :border (border/empty-border :thickness 10)
+                        :north (vertical-panel :items [input-file-panel output-file-panel])
+                        :center (left-right-split
+                                 (top-bottom-split
+                                  source-scroll
+                                  error-scroll
+                                  :divider-location 0.8 :border nil)
+                                 ref-scroll
+                                 :divider-location 0.5 :border nil)
+                        :south run-button)
+                       data-table-scroll :divider-location 0.9 :border nil)
+             :size [1000 :by 700]
+             :on-close :exit
+             )
+      show!))
 
-
+; (-main)

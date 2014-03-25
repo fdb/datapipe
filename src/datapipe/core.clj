@@ -28,6 +28,15 @@
       (doseq [line (join-csv-rows (op (split-csv-rows headers (line-seq r))))]
         (.write w (str line "\n"))))))
 
+(defn preview-file
+  "Show a preview of the file by reading the first n lines."
+  ([f] (preview-file f 100))
+  ([f n]
+   (with-open [r (io/reader f)]
+     (let [headers (vec (s/split (first (line-seq r)) #","))
+           rows (vec (take n (split-csv-rows headers (line-seq r))))]
+       [headers rows]))))
+
 
 (defn stats
   "Go over the input file and keep statistics."
