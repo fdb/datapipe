@@ -2,6 +2,14 @@
   (:require [clojure.test :refer :all]
             [datapipe.ops :refer :all]))
 
+(deftest test-average
+  (testing "The average method"
+    (let [coll [{:name "Alice" :age 40}
+                {:name "Bob" :age "10"}
+                {:name "Bob" :age 30}]]
+      (is (= (average :age :name coll)
+             [{:name "Alice" :age 40.0} {:name "Bob" :age 20.0}])))))
+
 (deftest test-sample
   (testing "The sample method"
     (let [coll (sample 0.1 (range 10000))]
@@ -43,4 +51,3 @@
   (testing "Words"
     (let [keys [{:k "a"} {:k "b"} {:k "."} {:k " "} {:k "c"}]]
       (is (= (words :k keys) [{:word "ab" :k "a"} {:word ". " :k "."} {:word "c" :k "c"}])))))
-

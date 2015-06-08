@@ -4,6 +4,21 @@
 
 (set! *warn-on-reflection* true)
 
+(defn- average-by-group
+  [key group]
+  (let [vals (map (comp #(Float/parseFloat (str %)) key) group)]
+    (/ (reduce + vals) (count group))))
+
+(defn average
+  "Calculate average values by grouping on a column.
+  Example: average :age :name"
+  [key grouper coll]
+  (let [groups (group-by grouper coll)]
+    (map (fn [[group-key group]]
+           (let [avg (average-by-group key group)]
+             {grouper group-key
+              key avg})) groups)))
+
 (defn sample
   "Reduce the size of the file by randomly selecting lines from the file.
   The percentage is a value between 0 and 1. At 0, no rows are kept.
