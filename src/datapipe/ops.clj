@@ -83,18 +83,28 @@
          (let [kv1 (get row k1) kv2 (get row k2)]
            (assoc cnts [kv1 kv2] (inc (get cnts [kv1 kv2] 0)))))
    {}
-   coll)))
+   coll))
+  ([k1 k2 k3 coll]
+   (reduce
+    (fn [cnts row]
+      (let [kv1 (get row k1) kv2 (get row k2) kv3 (get row k3)]
+        (assoc cnts [kv1 kv2 kv3] (inc (get cnts [kv1 kv2 kv3] 0)))))
+    {}
+    coll)))
 
 (defn freqs
   "Count the number of time a value in the given column occurs.
-  You can also specify two columns; in this case both values have to match.
+  You can also specify more columns; in that case all values have to match.
   Example: freqs :x :y"
   ([key coll]
   (let [fm (freq-map key coll)]
     (map (fn [[kv amt]] {key kv :amount amt}) fm)))
   ([k1 k2 coll]
    (let [fm (freq-map k1 k2 coll)]
-     (map (fn [[[kv1 kv2] amt]] {k1 kv1 k2 kv2 :amount amt}) fm))))
+     (map (fn [[[kv1 kv2] amt]] {k1 kv1 k2 kv2 :amount amt}) fm)))
+  ([k1 k2 k3 coll]
+   (let [fm (freq-map k1 k2 k3 coll)]
+     (map (fn [[[kv1 kv2 kv3] amt]] {k1 kv1 k2 kv2 k3 kv3 :amount amt}) fm))))
 
 
 (defn- parse-float
