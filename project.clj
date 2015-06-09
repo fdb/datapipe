@@ -1,4 +1,4 @@
-(defproject datapipe "0.1.1"
+(defproject datapipe "0.1.3"
   :description "Data tool"
   :url "http://github.com/fdb/datapipe"
   :license {:name "Eclipse Public License"
