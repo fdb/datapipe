@@ -1,4 +1,5 @@
 (ns datapipe.gui
+  (:gen-class)
   (:require [seesaw.forms :as forms]
             [seesaw.border :as border]
             [clojure.string :as s]
