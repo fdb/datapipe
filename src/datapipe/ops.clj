@@ -9,15 +9,26 @@
   (let [vals (map (comp #(Float/parseFloat (str %)) key) group)]
     (/ (reduce + vals) (count group))))
 
+(defn- grouping-fn
+  [grouper]
+  (if (keyword? grouper)
+    grouper
+    #(hash (map % grouper))))
+
+(defn- group-keys
+  [grouper group]
+  (if (keyword? grouper)
+    {grouper ((first group) grouper)}
+    (zipmap grouper (map (first group) grouper))))
+
 (defn average
-  "Calculate average values by grouping on a column.
+  "Calculate average values by grouping on a column. Column key can be a list.
   Example: average :age :name"
   [key grouper coll]
-  (let [groups (group-by grouper coll)]
+  (let [groups (group-by (grouping-fn grouper) coll)]
     (map (fn [[group-key group]]
            (let [avg (average-by-group key group)]
-             {grouper group-key
-              key avg})) groups)))
+             (merge (group-keys grouper group) {key avg}))) groups)))
 
 (defn sample
   "Reduce the size of the file by randomly selecting lines from the file.
@@ -250,5 +261,3 @@
     (if-not (nil? cal)
       (.get cal java.util.Calendar/WEEK_OF_YEAR)
       0)))
-
-

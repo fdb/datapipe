@@ -8,7 +8,14 @@
                 {:name "Bob" :age "10"}
                 {:name "Bob" :age 30}]]
       (is (= (average :age :name coll)
-             [{:name "Alice" :age 40.0} {:name "Bob" :age 20.0}])))))
+             [{:name "Alice" :age 40.0} {:name "Bob" :age 20.0}]))))
+  (testing "Grouped average method"
+    (let [coll [{:year 2015 :month 1 :value 10}
+                {:year 2015 :month 1 :value 30}
+                {:year 2014 :month 1 :value 99}]]
+      (is (= (average :value [:year :month] coll)
+             [{:year 2015 :month 1 :value 20.0}
+              {:year 2014 :month 1 :value 99.0}])))))
 
 (deftest test-sample
   (testing "The sample method"
