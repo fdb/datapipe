@@ -1,6 +1,12 @@
 DataPipe
 ========
-Looks like crap, works like magic.
+DataPipe is a data processing tool that can work with larger-than-memory files.
+
+## Downloading
+
+DataPipe requires that you have [Java](https://java.com/en/download/) installed.
+
+Download the latest version from the [releases page](https://github.com/fdb/datapipe/releases). It looks like `datapipe-0.x.x-standalone.jar`.
 
 ## To build
 
